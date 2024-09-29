@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "tagger"
+version = "0.1.0"
+description = ""
+authors = ["Тимофей Пискленов"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["all"], version = "^0.103.0"}
+alembic = "^1.11.3"
+loguru = "^0.7.0"
+ruff = "^0.3.7"
+pre-commit = "^3.7.0"
+asyncpg = "^0.29.0"
+minio = "^7.2.8"
+torch = "^2.4.1"
+torchvision = "^0.19.1"
+einops = "^0.8.0"
+regex = "^2024.9.11"
+timm = "^1.0.9"
+iopath = "^0.1.10"
+ftfy = "^6.2.3"
+torchaudio = "^2.4.1"
+pytorchvideo = "^0.1.5"
+moviepy = "^1.0.3"
+transformers = "^4.45.1"
+catboost = "^1.2.7"
+optuna = "^4.0.0"
+sentence-transformers = "^3.1.1"
+scikit-learn = "^1.5.2"
+decord = "^0.6.0"
+sentencepiece = "^0.2.0"
+opencv-python = "^4.10.0.84"
+openai-whisper = "^20240927"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+exclude = ["models/__init__.py"]

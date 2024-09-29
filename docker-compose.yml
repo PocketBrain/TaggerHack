@@ -1,0 +1,68 @@
+version: "3"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      bash -c "alembic upgrade head && poetry run uvicorn app:app --host 0.0.0.0 --port 8000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+
+  postgres:
+    image: postgres:latest
+    container_name: db
+    volumes:
+      - postgres_storage:/var/lib/postgresql/data
+    env_file:
+      - .docker/.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: unless-stopped
+    volumes:
+      - static_storage:/data
+    env_file:
+      - .docker/.env
+    command: server /data --console-address :9001
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  nginx:
+    build:
+      dockerfile: ./Dockerfile
+      context: ./.docker/nginx/
+    container_name: nginx
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+    env_file:
+      - .docker/.env
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+      - "9000:9000"
+      - "9001:9001"
+
+volumes:
+  postgres_storage:
+  static_storage:
